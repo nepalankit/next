@@ -1,8 +1,10 @@
 import { connectdb } from "@/dbconfig/dbconfig";
 import User from "@/Models/userModel";
 import { NextResponse,NextRequest } from "next/server";
-import bcryptjs from 'bcryptjs'
-connectdb()
+import bcryptjs from "bcryptjs";
+
+
+connectdb();
 
  export async function POST(request: NextRequest)
  {
@@ -19,7 +21,7 @@ connectdb()
 
         if(user)
         {
-            return NextResponse.json({'User already exists'},{status:400})
+            return NextResponse.json({message:'User already exists'})
         }
         
         //hash password
