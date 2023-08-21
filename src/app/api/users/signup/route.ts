@@ -1,60 +1,48 @@
 import { connectdb } from "@/dbconfig/dbconfig";
 import User from "@/Models/userModel";
-import { NextResponse,NextRequest } from "next/server";
-import bcryptjs from "bcryptjs";
+import { NextRequest, NextResponse } from "next/server";
+import bcryptjs from 'bcryptjs'
 
+connectdb()
 
-connectdb();
+export async function POST(request: NextRequest){
+    try {
+        const reqBody = await request.json()
+        const { username, email, password } = reqBody
 
- export async function POST(request: NextRequest)
- {
+        console.log(reqBody);
 
-    try{
+        // Check if user already exists
+        const user = await User.findOne({ email })
 
-        const reqBody=await request.json()
-
-        const {username,password,email}=reqBody
-        console.log(reqBody)
-        //check is user already exists
-
-        const user= await User.findOne({email})
-
-        if(user)
-        {
-            return NextResponse.json({message:'User already exists'})
+        if(user){
+            return  NextResponse.json({ error: "User already exists" }, { status: 400 })
         }
-        
-        //hash password
 
+        // Hash password
+        const salt = await bcryptjs.genSalt(10)
+        const hashedPassword = await bcryptjs.hash(password, salt)
 
-        const salt=await bcryptjs.genSalt(10)
-    
-        const hashedPassword=await bcryptjs.hash(password,salt)
-    
-        //SAVE USER
-        const newUser=new User({
-            username : username ,
-            email    :  email   ,
-            password:hashedPassword
+        const newUser = new User({
+            username,
+            email,
+            password: hashedPassword
         })
-    
-        const savedUser=await newUser.save()
-        console.log(savedUser)
 
-        return NextResponse.json({message:"user created successfully",
-        success:true,
-        savedUser
-    
-        }
-        
-        )
+        const savedUser = await newUser.save()
+        // console.log(savedUser);
 
+        // Send verification email
+
+        return  NextResponse.json({
+            message: "User created successfully",
+            success: true,
+            savedUser
+        })
+
+    } catch (error: any) {
+        console.error("Error while processing request:", error);
+        return  NextResponse.json({ error: "An error occurred while processing your request" }, { status: 500 });
     }
     
-        catch(error:any)
-    {
-        return NextResponse.json({error:error.message},{status:500})
-    }
-
-
- }
+}
