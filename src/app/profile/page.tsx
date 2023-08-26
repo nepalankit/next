@@ -11,6 +11,9 @@ export default function profile(){
     
     const router=useRouter()
     const [data,setData]=React.useState('nothing')
+    const [email,setEmail]=React.useState('')
+
+    const[username,setUserName]=React.useState('')
 
 
 const logout =async()=>{
@@ -29,9 +32,10 @@ const getUserDetails = async () => {
     try {
         const res = await axios.get('/api/users/me');
         
-            // setData(res.data.user._id);
-            setData(res.data.user.username);
-
+            setData(res.data.user._id);
+       
+            setEmail(res.data.user.email)
+            setUserName(res.data.user.username)
       
     } catch (error:any) {
         console.log(error.message);
@@ -44,9 +48,14 @@ const getUserDetails = async () => {
 
         <strong><h1>Profile</h1> </strong>
         <hr />
-        <h1 className='p-3 py-2 rounded bg-green-500'> {data==='nothing' ? 'Nothing ':<Link href={`/profile/${data}`}>
+        <h1 className='p-3 py-2 rounded bg-green-500'>UserID: {data==='nothing' ? 'Nothing ':<Link href={`/profile/${data}`}>
             {data}
         </Link>}</h1>
+       <h1>Username :{username}</h1>
+       <h1>Email :{email}</h1>
+
+
+        
 
         <button
         onClick={logout} 
