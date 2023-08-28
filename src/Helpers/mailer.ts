@@ -14,7 +14,8 @@ export const  sendEmail=async ({email,emailType,userId}:any)=>{
                     verifyTokenExpiry:Date.now()+3600000
                 })
             }
-            else(emailType==='RESET'){
+            else(emailType==='RESET')
+            {
                 User.findByIdAndUpdate(
                     {
 
